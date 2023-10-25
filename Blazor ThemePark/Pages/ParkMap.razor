@@ -1,0 +1,17 @@
+﻿@page "/park-map"
+<script src="_content/Blazor ThemePark/js/leaflet-map.js"></script>
+@inject IJSRuntime JSRuntime
+
+<h3>ParkMap</h3>
+
+<div id="map" style="height: 400px;"></div>
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("setTimeout", "initializeMap", 100);
+        }
+    }
+}

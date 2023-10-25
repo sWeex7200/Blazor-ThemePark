@@ -1,0 +1,175 @@
+﻿@page "/shop-selector"
+@inject NavigationManager NavigationManager
+@inject IShoppingCartService ShoppingCartService
+
+<h3>Shop Selector</h3>
+
+<div style="display: flex; flex-direction: column;">
+    <label for="shopList">Select a Shop:</label>
+    <select id="shopList" @onchange="OnShopSelected">
+        @foreach (var shop in shops)
+        {
+            <option value="@shop">@shop</option>
+        }
+    </select>
+</div>
+
+<div>
+    <p>You selected: @selectedShop</p>
+</div>
+
+@if (!string.IsNullOrEmpty(selectedShop) && shopItems.ContainsKey(selectedShop))
+{
+    <div>
+        <h4>Items in @selectedShop:</h4>
+        <ul>
+            @foreach (var item in shopItems[selectedShop])
+            {
+                <li>
+                    <div class="shop-item">
+                        <img src="@item.ImageUrl" alt="Shop Image" width="100" height="100" />
+                        <div class="item-details">
+                            <h5>@item.Name</h5>
+                            <p>Price: $@item.Price</p>
+                            <button @onclick="() => AddToCart(item)">Add to Cart</button>
+                        </div>
+                    </div>
+                </li>
+            }
+        </ul>
+    </div>
+}
+else
+{
+    <p>No shop selected or shop not found.</p>
+}
+
+@if (shoppingCart.Count > 0)
+{
+    <div>
+        <button @onclick="Checkout">Checkout</button>
+    </div>
+}
+
+<div>
+    <h4>Shopping Cart:</h4>
+    <ul>
+        @if (ShoppingCartService.ShoppingCartItems.Count > 0)
+        {
+            @foreach (var cartItem in ShoppingCartService.ShoppingCartItems)
+            {
+                <li>
+                    <div class="cart-item">
+                        <img src="@cartItem.ImageUrl" alt="Shop Image" width="50" height="50" />
+                        <div class="item-details">
+                            <h6>@cartItem.Name</h6>
+                            <p>Price: $@cartItem.Price</p>
+                        </div>
+                    </div>
+                </li>
+            }
+        }
+        else
+        {
+            <li>Your shopping cart is empty.</li>
+        }
+    </ul>
+</div>
+
+
+@code {
+    private string? selectedShop;
+    private List<string> shops = new List<string>
+    {
+        "Shop 1",
+        "Shop 2",
+        "Shop 3",
+        "Shop 4"
+    };
+
+    private Dictionary<string, List<ShopItem>> shopItems = new Dictionary<string, List<ShopItem>>
+    {
+        {
+            "Shop 1",
+            new List<ShopItem>
+            {
+                new ShopItem
+                {
+                    Name = "Item 1",
+                    ImageUrl = "item1.jpg",
+                    Price = 10.99
+                },
+                new ShopItem
+                {
+                    Name = "Item 2",
+                    ImageUrl = "item2.jpg",
+                    Price = 15.99
+                },
+            }
+        },
+        {
+            "Shop 2",
+            new List<ShopItem>
+            {
+                new ShopItem
+                {
+                    Name = "Item 3",
+                    ImageUrl = "item3.jpg",
+                    Price = 8.99
+                },
+            }
+        },
+        {
+            "Shop 3",
+            new List<ShopItem>
+            {
+                new ShopItem
+                {
+                    Name = "Item 4",
+                    ImageUrl = "item4.jpg",
+                    Price = 12.49
+                },
+            }
+        },
+        {
+            "Shop 4",
+            new List<ShopItem>
+            {
+                new ShopItem
+                {
+                    Name = "Item 5",
+                    ImageUrl = "item5.jpg",
+                    Price = 9.99
+                },
+                new ShopItem
+                {
+                    Name = "Item 6",
+                    ImageUrl = "item6.jpg",
+                    Price = 14.99
+                },
+            }
+        },
+    };
+
+
+    private List<ShopItem> shoppingCart = new List<ShopItem>();
+
+    private void OnShopSelected(ChangeEventArgs e)
+    {
+        selectedShop = e.Value.ToString();
+    }
+
+    private void AddToCart(ShopItem item)
+    {
+        ShoppingCartService.AddToCart(item);
+    }
+
+
+    private void Checkout()
+    {
+        if (!string.IsNullOrEmpty(selectedShop) && shoppingCart.Count > 0)
+        {
+            NavigationManager.NavigateTo("/checkout");
+        }
+    }
+}

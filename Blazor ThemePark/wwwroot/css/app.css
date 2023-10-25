@@ -62,3 +62,14 @@ a, .btn-link {
     .blazor-error-boundary::after {
         content: "An error has occurred."
     }
+
+
+/*Styling form Food-Ordering*/
+.shop-item {
+    display: flex;
+    align-items: center;
+}
+
+.item-details {
+    margin-left: 10px;
+}
