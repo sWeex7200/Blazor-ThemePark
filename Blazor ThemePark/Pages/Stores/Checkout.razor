@@ -10,22 +10,45 @@
         @foreach (var cartItem in ShoppingCartService.ShoppingCartItems)
         {
             <li>
-                <img src="@cartItem.ImageUrl" alt="Shop Image" width="50" height="50" />
-                <div>
-                    <h6>@cartItem.Name</h6>
-                    <p>Price: $@cartItem.Price</p>
+                <div class="cart-item">
+                    <img src="@cartItem.ImageUrl" alt="Shop Image" width="50" height="50" />
+                    <div class="item-details">
+                        <h6>@cartItem.Name</h6>
+                        <p>Price: $@((decimal)cartItem.Price)</p>
+                    </div>
                 </div>
             </li>
         }
     </ul>
 </div>
 
-<div>
-    <button @onclick="GoBackToShopSelector">Back to Shop Selector</button>
-</div>
+@if (ShoppingCartService.ShoppingCartItems.Count > 0)
+{
+    <div>
+        <h4>Total Price: $@GetTotalPrice()</h4>
+        <button class="checkout-button" @onclick="ConfirmOrder">Confirm Order</button>
+        <button @onclick="GoBackToShopSelector">Return</button>
+    </div>
+}
+else
+{
+    <p>Your shopping cart is empty.</p>
+}
 
 @code {
     private List<ShopItem> shoppingCart = new List<ShopItem>();
+
+    private decimal GetTotalPrice()
+    {
+        return ShoppingCartService.ShoppingCartItems.Sum(item => (decimal)item.Price);
+    }
+
+    private void ConfirmOrder()
+    {
+        // Perform actions to confirm the order (e.g., send to a backend, clear the cart, etc.)
+        ShoppingCartService.ClearCart(); // Clear the shopping cart
+        NavigationManager.NavigateTo("/order-confirmation"); // Navigate to order confirmation page
+    }
 
     private void GoBackToShopSelector()
     {

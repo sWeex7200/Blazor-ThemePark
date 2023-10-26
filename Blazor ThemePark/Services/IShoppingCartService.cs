@@ -6,5 +6,6 @@ namespace Blazor_ThemePark.Services
     {
         List<ShopItem> ShoppingCartItems { get; }
         void AddToCart(ShopItem item);
+        void ClearCart(); // Add this method
     }
 }
