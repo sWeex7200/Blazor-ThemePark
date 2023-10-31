@@ -38,9 +38,19 @@
 
     private bool IsValidOrderDetails()
     {
-        // Implement validation requirements for the user details here.
-        // For example, you can check if the Name and Email are not empty.
-        return !string.IsNullOrWhiteSpace(orderDetails.Name) && !string.IsNullOrWhiteSpace(orderDetails.Email);
+        // Check if the name is not empty
+        bool isNameValid = !string.IsNullOrWhiteSpace(orderDetails.Name);
+
+        // Check if the email is not empty and in a valid email format
+        bool isEmailValid = !string.IsNullOrWhiteSpace(orderDetails.Email) && IsValidEmail(orderDetails.Email);
+
+        // Return true if both name and email are valid
+        return isNameValid && isEmailValid;
+    }
+
+    private bool IsValidEmail(string email)
+    {
+        return System.Text.RegularExpressions.Regex.IsMatch(email, @"^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$");
     }
 
     private void OrderConfirm()
@@ -54,21 +64,8 @@
                     UserDetails = orderDetails,
                     Items = ShoppingCartService.ShoppingCartItems,
                     TotalPrice = GetTotalPrice(),
-                    // Include additional order details here.
+                    OrderDate = DateTime.Now, // Add the order date
                 };
-
-            // Replace this with your order confirmation logic (e.g., save to a database).
-            // You may also generate an order ID and order date here.
-            // For demonstration purposes, we'll print the order details.
-            Console.WriteLine("Order Confirmation:");
-            Console.WriteLine($"Name: {order.UserDetails.Name}");
-            Console.WriteLine($"Email: {order.UserDetails.Email}");
-            Console.WriteLine("Ordered Items:");
-            foreach (var item in order.Items)
-            {
-                Console.WriteLine($" - {item.Name}, Price: ${item.Price}");
-            }
-            Console.WriteLine($"Total Price: ${order.TotalPrice}");
 
             // Clear the shopping cart (update your IShoppingCartService accordingly).
             ShoppingCartService.ClearCart();
