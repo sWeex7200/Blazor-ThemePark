@@ -1,0 +1,86 @@
+﻿@page "/order-confirmation"
+@inject IShoppingCartService ShoppingCartService
+@inject NavigationManager NavigationManager
+
+<h4>Order Details</h4>
+
+<ul>
+    @foreach (var cartItem in ShoppingCartService.ShoppingCartItems)
+    {
+        <li>
+            <div class="order-item">
+                <img src="@cartItem.ImageUrl" alt="Shop Image" width="50" height="50" />
+                <div class="item-details">
+                    <h6>@cartItem.Name</h6>
+                    <p>Price: $@cartItem.Price</p>
+                </div>
+            </div>
+        </li>
+    }
+</ul>
+
+<h4>User Details</h4>
+
+<div class="form-group">
+    <label for="name">Name</label>
+    <input id="name" class="form-control" @bind="orderDetails.Name" />
+</div>
+
+<div class="form-group">
+    <label for="email">Email</label>
+    <input id="email" class="form-control" @bind="orderDetails.Email" />
+</div>
+
+<button class="btn btn-primary" @onclick="OrderConfirm" disabled="@(!IsValidOrderDetails())">Confirm Order</button>
+
+@code {
+    private OrderDetails orderDetails = new OrderDetails();
+
+    private bool IsValidOrderDetails()
+    {
+        // Implement validation requirements for the user details here.
+        // For example, you can check if the Name and Email are not empty.
+        return !string.IsNullOrWhiteSpace(orderDetails.Name) && !string.IsNullOrWhiteSpace(orderDetails.Email);
+    }
+
+    private void OrderConfirm()
+    {
+        // Check if user details are valid
+        if (IsValidOrderDetails())
+        {
+            // Create an order or perform other order-related actions.
+            var order = new Order
+                {
+                    UserDetails = orderDetails,
+                    Items = ShoppingCartService.ShoppingCartItems,
+                    TotalPrice = GetTotalPrice(),
+                    // Include additional order details here.
+                };
+
+            // Replace this with your order confirmation logic (e.g., save to a database).
+            // You may also generate an order ID and order date here.
+            // For demonstration purposes, we'll print the order details.
+            Console.WriteLine("Order Confirmation:");
+            Console.WriteLine($"Name: {order.UserDetails.Name}");
+            Console.WriteLine($"Email: {order.UserDetails.Email}");
+            Console.WriteLine("Ordered Items:");
+            foreach (var item in order.Items)
+            {
+                Console.WriteLine($" - {item.Name}, Price: ${item.Price}");
+            }
+            Console.WriteLine($"Total Price: ${order.TotalPrice}");
+
+            // Clear the shopping cart (update your IShoppingCartService accordingly).
+            ShoppingCartService.ClearCart();
+
+            // Redirect the user to a "Thank You" page or any other relevant page.
+            NavigationManager.NavigateTo("/thank-you");
+        }
+    }
+
+    // This method calculates the total price of items in the shopping cart.
+    private decimal GetTotalPrice()
+    {
+        return ShoppingCartService.ShoppingCartItems.Sum(item => (decimal)item.Price);
+    }
+}
